@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-
+import { version } from "../../package.json";
 const menus = [
     { name: "Dashboard", path: "/", icon: Home },
     { name: "Perusahaan", path: "/perusahaan", icon: Building2 },
@@ -34,7 +34,7 @@ export default function Sidebar() {
             <div
                 className={`flex items-center ${
                     collapsed ? "justify-center" : "justify-between"
-                } mb-8`}>
+                } `}>
                 {!collapsed && (
                     <h2 className="text-xl font-bold text-blue-600">
                         Kasir Web
@@ -42,9 +42,19 @@ export default function Sidebar() {
                 )}
                 <button
                     onClick={() => setCollapsed(!collapsed)}
-                    className="p-2 rounded hover:bg-gray-100 center">
+                    className="p-2 rounded hover:bg-gray-100 center cursor-pointer">
                     <Menu size={20} />
                 </button>
+            </div>
+            {/* <p className="flex justify-center text-xs text-gray-400 mb-8">
+                Version {version}
+            </p> */}
+            <div className="flex items-center mb-4">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="mx-4 text-xs text-gray-400">
+                    Versi {version}
+                </span>
+                <div className="flex-grow border-t border-gray-300"></div>
             </div>
 
             {/* Menu Items */}

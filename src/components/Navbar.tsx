@@ -26,7 +26,7 @@ export default function Navbar({ title, breadcrumbs = [] }: NavbarProps) {
                         {breadcrumbs.length > 2 && (
                             <button
                                 onClick={() => router.back()}
-                                className="p-1 rounded-lg hover:bg-gray-100">
+                                className="p-1 rounded-lg hover:bg-gray-100 cursor-pointer">
                                 <ArrowLeft className="w-5 h-5 text-gray-600" />
                             </button>
                         )}

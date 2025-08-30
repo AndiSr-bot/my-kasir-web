@@ -25,7 +25,7 @@ export default function UserMenu() {
             {/* Trigger */}
             <button
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 cursor-pointer">
+                className="flex items-center gap-2 cursor-pointer cursor-pointer">
                 <User className="w-6 h-6" />
                 <span className="text-sm font-medium">John Doe</span>
             </button>
@@ -33,15 +33,15 @@ export default function UserMenu() {
             {/* Dropdown */}
             {open && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg">
-                    <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2">
+                    <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 cursor-pointer">
                         <User className="w-4 h-4" />
                         Profil
                     </button>
-                    <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2">
+                    <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 cursor-pointer">
                         <Settings className="w-4 h-4" />
                         Pengaturan
                     </button>
-                    <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2">
+                    <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2 cursor-pointer">
                         <LogOut className="w-4 h-4" />
                         Logout
                     </button>

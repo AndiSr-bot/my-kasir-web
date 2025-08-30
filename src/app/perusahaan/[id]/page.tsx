@@ -21,7 +21,7 @@ export default function PerusahaanDetailPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { register, handleSubmit, reset } = useForm<TPerusahaan>();
+    const { register, handleSubmit, reset } = useForm<TPerusahaanUpdate>();
 
     const fetchData = async () => {
         if (!id) return;
@@ -56,7 +56,7 @@ export default function PerusahaanDetailPage() {
                 {/* Tombol Edit */}
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="absolute top-4 right-4 hover:text-blue-600">
+                    className="absolute top-4 right-4 hover:text-blue-600 cursor-pointer">
                     <FiEdit size={20} />
                 </button>
 
@@ -137,12 +137,12 @@ export default function PerusahaanDetailPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 rounded-md bg-gray-200">
+                                    className="px-4 py-2 rounded-md bg-gray-200 cursor-pointer">
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 rounded-md bg-blue-600 text-white">
+                                    className="px-4 py-2 rounded-md bg-blue-600 text-white cursor-pointer">
                                     Simpan
                                 </button>
                             </div>
