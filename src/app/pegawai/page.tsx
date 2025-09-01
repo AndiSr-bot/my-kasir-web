@@ -219,14 +219,16 @@ export default function PegawaiListPage() {
                                     className="w-full border p-2 rounded-md h-10">
                                     <option value="">-- Pilih Role --</option>
                                     <option value={RolePegawai.ADMIN}>
-                                        Admin
+                                        {getRoleLabel(RolePegawai.ADMIN)}
                                     </option>
                                     <option
                                         value={RolePegawai.ADMIN_PERUSAHAAN}>
-                                        Admin Perusahaan
+                                        {getRoleLabel(
+                                            RolePegawai.ADMIN_PERUSAHAAN
+                                        )}
                                     </option>
                                     <option value={RolePegawai.STAFF}>
-                                        Staff
+                                        {getRoleLabel(RolePegawai.STAFF)}
                                     </option>
                                 </select>
                                 {errors.role && (

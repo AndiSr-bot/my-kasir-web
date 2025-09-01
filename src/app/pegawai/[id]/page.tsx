@@ -4,6 +4,7 @@
 import Navbar from "@/components/Navbar";
 import { getPegawai, updatePegawai } from "@/repositories/pegawai_repository";
 import { RolePegawai, TPegawai, TPegawaiUpdate } from "@/types/pegawai";
+import { getRoleLabel } from "@/utils/role_label";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -91,7 +92,7 @@ export default function PegawaiDetailPage() {
                     </div>
                     <div className="flex justify-between">
                         <p className="font-semibold">Role</p>
-                        <p>{data.role}</p>
+                        <p>{getRoleLabel(data.role)}</p>
                     </div>
                     <div className="flex justify-between">
                         <p className="font-semibold">No HP</p>
@@ -142,14 +143,16 @@ export default function PegawaiDetailPage() {
                                     {...register("role", { required: true })}
                                     className="w-full border rounded-md h-10 px-3 py-2">
                                     <option value={RolePegawai.ADMIN}>
-                                        Admin
+                                        {getRoleLabel(RolePegawai.ADMIN)}
                                     </option>
                                     <option
                                         value={RolePegawai.ADMIN_PERUSAHAAN}>
-                                        Admin Perusahaan
+                                        {getRoleLabel(
+                                            RolePegawai.ADMIN_PERUSAHAAN
+                                        )}
                                     </option>
                                     <option value={RolePegawai.STAFF}>
-                                        Staff
+                                        {getRoleLabel(RolePegawai.STAFF)}
                                     </option>
                                 </select>
                             </div>
