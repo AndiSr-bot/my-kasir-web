@@ -26,3 +26,9 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     @apply text-gray-600;
 }
+
+input,
+select,
+textarea {
+    @apply text-gray-400;
+}
