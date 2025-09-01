@@ -6,8 +6,9 @@ import {
     getAllPegawai,
 } from "@/repositories/pegawai_repository";
 import { getAllPerusahaan } from "@/repositories/perusahaan_repository";
-import { TPegawai, TPegawaiCreate } from "@/types/pegawai";
+import { RolePegawai, TPegawai, TPegawaiCreate } from "@/types/pegawai";
 import { TPerusahaan } from "@/types/perusahaan";
+import { getRoleLabel } from "@/utils/role_label";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -148,7 +149,9 @@ export default function PegawaiListPage() {
                                     {item.nama}
                                 </td>
                                 <td className="px-4 py-2">{item.jabatan}</td>
-                                <td className="px-4 py-2">{item.role}</td>
+                                <td className="px-4 py-2">
+                                    {getRoleLabel(item.role)}
+                                </td>
                                 <td className="px-4 py-2">{item.no_hp}</td>
                                 <td className="px-4 py-2">{item.email}</td>
                                 <td className="px-4 py-2">
@@ -215,11 +218,16 @@ export default function PegawaiListPage() {
                                     {...register("role", { required: true })}
                                     className="w-full border p-2 rounded-md h-10">
                                     <option value="">-- Pilih Role --</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="admin_perusahaan">
+                                    <option value={RolePegawai.ADMIN}>
+                                        Admin
+                                    </option>
+                                    <option
+                                        value={RolePegawai.ADMIN_PERUSAHAAN}>
                                         Admin Perusahaan
                                     </option>
-                                    <option value="staff">Staff</option>
+                                    <option value={RolePegawai.STAFF}>
+                                        Staff
+                                    </option>
                                 </select>
                                 {errors.role && (
                                     <p className="text-red-500 text-sm">

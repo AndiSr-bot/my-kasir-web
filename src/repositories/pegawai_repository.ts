@@ -14,7 +14,6 @@ import {
     where,
 } from "firebase/firestore";
 
-// Ambil semua pegawai
 export async function getAllPegawai(perusahaanId: string): Promise<TPegawai[]> {
     const snap = await getDocs(
         collection(db, "perusahaan", perusahaanId, "pegawai")
@@ -25,7 +24,6 @@ export async function getAllPegawai(perusahaanId: string): Promise<TPegawai[]> {
     })) as TPegawai[];
 }
 
-// Ambil satu pegawai by id
 export async function getPegawai(
     id: string,
     perusahaanId: string
@@ -38,29 +36,25 @@ export async function getPegawai(
     return { id: snap.id, ...snap.data() } as TPegawai;
 }
 
-// Tambah pegawai baru
 export async function createPegawai(
     perusahaanId: string,
     data: TPegawaiCreate
 ): Promise<void> {
     try {
-        // 1. buat user baru di Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(
             auth,
             data.email,
-            "12345678" // default password
+            "12345678"
         );
 
         const uid = userCredential.user.uid;
 
-        // 2. siapkan data pegawai untuk Firestore
         const dataPegawai: TPegawaiCreate = {
             ...data,
             auth_uid: uid,
             foto: data.foto || null,
         };
 
-        // 3. simpan ke subcollection pegawai
         await addDoc(
             collection(db, "perusahaan", perusahaanId, "pegawai"),
             dataPegawai
@@ -68,7 +62,7 @@ export async function createPegawai(
     } catch (error: any) {
         if (error.code === "auth/email-already-in-use") {
             console.log("Email sudah terdaftar di Auth. Cek Firestore...");
-            // cek apakah email ini sudah ada di firestore pegawai
+
             const pegawaiRef = collectionGroup(db, "pegawai");
             const q = query(pegawaiRef, where("email", "==", data.email));
             const snapshot = await getDocs(q);
@@ -77,7 +71,6 @@ export async function createPegawai(
                 throw new Error("Email sudah terdaftar sebagai pegawai!");
             }
 
-            // kalau di auth ada, tapi firestore belum -> simpan manual
             const dataPegawai: TPegawaiCreate = {
                 ...data,
                 auth_uid: "unknown",
@@ -94,7 +87,6 @@ export async function createPegawai(
     }
 }
 
-// Update data pegawai
 export async function updatePegawai(
     pegawai: TPegawaiUpdate,
     id: string

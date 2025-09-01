@@ -40,7 +40,6 @@ export default function PerusahaanListPage() {
     } = useForm<FormInputs>();
 
     const onSubmit = async (formData: FormInputs) => {
-        // jika ada file logo, bisa di-upload ke server dulu
         const logoUrl = formData.logo?.[0]
             ? URL.createObjectURL(formData.logo[0])
             : "/default-logo.png";

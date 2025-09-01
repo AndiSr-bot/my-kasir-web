@@ -3,7 +3,7 @@
 
 import Navbar from "@/components/Navbar";
 import { getPegawai, updatePegawai } from "@/repositories/pegawai_repository";
-import { TPegawai, TPegawaiUpdate } from "@/types/pegawai";
+import { RolePegawai, TPegawai, TPegawaiUpdate } from "@/types/pegawai";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -141,11 +141,16 @@ export default function PegawaiDetailPage() {
                                 <select
                                     {...register("role", { required: true })}
                                     className="w-full border rounded-md h-10 px-3 py-2">
-                                    <option value="admin">Admin</option>
-                                    <option value="admin_perusahaan">
+                                    <option value={RolePegawai.ADMIN}>
+                                        Admin
+                                    </option>
+                                    <option
+                                        value={RolePegawai.ADMIN_PERUSAHAAN}>
                                         Admin Perusahaan
                                     </option>
-                                    <option value="staff">Staff</option>
+                                    <option value={RolePegawai.STAFF}>
+                                        Staff
+                                    </option>
                                 </select>
                             </div>
                             <div>

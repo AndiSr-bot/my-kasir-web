@@ -6,7 +6,6 @@ export default function UserMenu() {
     const [open, setOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // klik di luar untuk nutup menu
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (
