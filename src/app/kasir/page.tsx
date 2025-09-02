@@ -235,9 +235,7 @@ export default function KasirPage() {
                             <th className="px-4 py-2 text-left font-semibold">
                                 Total
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
-                                Aksi
-                            </th>
+                            <th className="px-4 py-2 text-left font-semibold w-0"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -310,7 +308,7 @@ export default function KasirPage() {
                                                 handleRemove(item.stokId)
                                             }
                                             className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition cursor-pointer">
-                                            Hapus
+                                            x
                                         </button>
                                     </td>
                                 </tr>
