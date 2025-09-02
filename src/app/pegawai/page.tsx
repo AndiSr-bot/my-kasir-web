@@ -73,7 +73,7 @@ export default function PegawaiListPage() {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <>
+        <div className="p-6">
             <Navbar title="Pegawai" breadcrumbs={["Dashboard", "Pegawai"]} />
 
             <div className="mx-auto mt-5 p-6 rounded-2xl shadow-lg bg-white">
@@ -168,7 +168,6 @@ export default function PegawaiListPage() {
                 </table>
             </div>
 
-            {/* Modal Tambah Pegawai */}
             {isOpen && (
                 <div className="fixed inset-0 bg-[rgba(0,0,0,0.25)] flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-2xl shadow-lg w-[450px]">
@@ -300,6 +299,6 @@ export default function PegawaiListPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

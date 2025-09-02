@@ -44,6 +44,25 @@ export async function getStokByBarcode(
     return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as TStok;
 }
 
+export async function searchStok(
+    perusahaanId: string,
+    search: string
+): Promise<TStok[]> {
+    const stokRef = collection(db, "perusahaan", perusahaanId, "stok");
+    const snapshot = await getDocs(stokRef);
+
+    if (snapshot.empty) return [];
+
+    // buat regex case-insensitive
+    const regex = new RegExp(search, "i");
+
+    return snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() } as TStok))
+        .filter(
+            (stok) => regex.test(stok.nama) || regex.test(stok.no_barcode ?? "")
+        );
+}
+
 export async function createStok(
     perusahaanId: string,
     data: TStokCreate

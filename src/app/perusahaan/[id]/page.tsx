@@ -46,14 +46,13 @@ export default function PerusahaanDetailPage() {
     if (!data) return <p>Perusahaan tidak ditemukan</p>;
 
     return (
-        <>
+        <div className="p-6">
             <Navbar
                 title="Detail Perusahaan"
                 breadcrumbs={["Dashboard", "Perusahaan", data.nama]}
             />
 
             <div className="mx-auto mt-5 p-6 rounded-2xl shadow-lg bg-white max-w-2xl relative">
-                {/* Tombol Edit */}
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="absolute top-4 right-4 hover:text-blue-600 cursor-pointer">
@@ -92,7 +91,6 @@ export default function PerusahaanDetailPage() {
                 </div>
             </div>
 
-            {/* Modal Edit */}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.25)] z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -150,6 +148,6 @@ export default function PerusahaanDetailPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

@@ -13,15 +13,12 @@ export default function Navbar({ title, breadcrumbs = [] }: NavbarProps) {
 
     return (
         <div className="w-full bg-white px-6 py-3 flex flex-col gap-2 shadow-sm rounded-2xl">
-            {/* Breadcrumb & Actions */}
             <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-1">
-                    {/* Breadcrumbs */}
                     <div className="text-sm text-gray-400">
                         {breadcrumbs.join(" / ")}
                     </div>
 
-                    {/* Title + Back */}
                     <div className="flex items-center gap-2">
                         {breadcrumbs.length > 2 && (
                             <button

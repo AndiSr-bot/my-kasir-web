@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { version } from "../../package.json";
 const menus = [
     { name: "Dashboard", path: "/", icon: Home },
@@ -24,13 +24,16 @@ const menus = [
 export default function Sidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);
-
+    useEffect(() => {
+        if (pathname === "/kasir") {
+            setCollapsed(true);
+        }
+    }, [pathname]);
     return (
         <aside
             className={`${
                 collapsed ? "w-20" : "w-64"
             } bg-white shadow-lg min-h-screen p-4 transition-all duration-300`}>
-            {/* Header + Toggle */}
             <div
                 className={`flex items-center ${
                     collapsed ? "justify-center" : "justify-between"
@@ -46,18 +49,19 @@ export default function Sidebar() {
                     <Menu size={20} />
                 </button>
             </div>
-            {/* <p className="flex justify-center text-xs text-gray-400 mb-8">
-                Version {version}
-            </p> */}
+
             <div className="flex items-center mb-4">
-                <div className="flex-grow border-t border-gray-300"></div>
-                <span className="mx-4 text-xs text-gray-400">
-                    Versi {version}
-                </span>
-                <div className="flex-grow border-t border-gray-300"></div>
+                {!collapsed && (
+                    <>
+                        <div className="flex-grow border-t border-gray-300"></div>
+                        <span className="mx-4 text-xs text-gray-400">
+                            Versi {version}
+                        </span>
+                        <div className="flex-grow border-t border-gray-300"></div>
+                    </>
+                )}
             </div>
 
-            {/* Menu Items */}
             <nav className="flex flex-col gap-2">
                 {menus.map(({ name, path, icon: Icon }) => {
                     const cleanPath = path.replace("/", "");

@@ -21,7 +21,6 @@ export default function UserMenu() {
 
     return (
         <div className="relative" ref={menuRef}>
-            {/* Trigger */}
             <button
                 onClick={() => setOpen(!open)}
                 className="flex items-center gap-2 cursor-pointer cursor-pointer">
@@ -29,7 +28,6 @@ export default function UserMenu() {
                 <span className="text-sm font-medium">John Doe</span>
             </button>
 
-            {/* Dropdown */}
             {open && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg">
                     <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 cursor-pointer">

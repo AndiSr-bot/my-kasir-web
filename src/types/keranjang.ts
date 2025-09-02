@@ -1,3 +1,5 @@
+import { TStok } from "./stok";
+
 export interface TKeranjang {
     id?: string;
     perusahaanId: string;
@@ -6,4 +8,5 @@ export interface TKeranjang {
     harga: number;
     jumlah: number;
     gambar?: string | null;
+    stok?: TStok;
 }

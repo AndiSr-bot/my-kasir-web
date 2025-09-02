@@ -56,7 +56,6 @@ export default function StokListPage() {
             selectedPerusahaan,
             formData.no_barcode
         );
-        console.log("stokByBarcode", stokByBarcode);
         if (stokByBarcode) {
             const dataRestoks: TRestock[] = stokByBarcode?.restocks || [];
             dataRestoks.push({
@@ -108,7 +107,7 @@ export default function StokListPage() {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <>
+        <div className="p-6">
             <Navbar title="Stok" breadcrumbs={["Dashboard", "Stok"]} />
 
             <div className="mx-auto mt-5 p-6 rounded-2xl shadow-lg bg-white">
@@ -193,7 +192,6 @@ export default function StokListPage() {
                 </table>
             </div>
 
-            {/* Modal Tambah Stok */}
             {isOpen && (
                 <div className="fixed inset-0 bg-[rgba(0,0,0,0.25)] bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-2xl shadow-lg w-[400px]">
@@ -236,7 +234,7 @@ export default function StokListPage() {
                                     </p>
                                 )}
                             </div>
-                            {/* harga jual */}
+
                             <div>
                                 <label className="block text-sm font-medium">
                                     Harga Beli
@@ -284,7 +282,7 @@ export default function StokListPage() {
                                     placeholder="Nomor barcode"
                                 />
                             </div>
-                            {/* gambar */}
+
                             <div>
                                 <label className="block text-sm font-medium">
                                     Gambar
@@ -313,6 +311,6 @@ export default function StokListPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

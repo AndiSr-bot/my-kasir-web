@@ -59,7 +59,7 @@ export default function PerusahaanListPage() {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <>
+        <div className="p-6">
             <Navbar
                 title="Perusahaan"
                 breadcrumbs={["Dashboard", "Perusahaan"]}
@@ -129,7 +129,6 @@ export default function PerusahaanListPage() {
                 </table>
             </div>
 
-            {/* Modal Tambah Perusahaan */}
             {isOpen && (
                 <div className="fixed inset-0 bg-[rgba(0,0,0,0.25)]  bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-2xl shadow-lg w-[400px]">
@@ -204,6 +203,6 @@ export default function PerusahaanListPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

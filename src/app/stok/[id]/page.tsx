@@ -77,15 +77,13 @@ export default function StokDetailPage() {
     if (!data) return <p>Produk tidak ditemukan</p>;
 
     return (
-        <>
+        <div className="p-6">
             <Navbar
                 title="Detail Stok"
                 breadcrumbs={["Dashboard", "Stok", data.nama]}
             />
 
-            {/* Layout kanan kiri */}
             <div className="mx-auto mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6 ">
-                {/* Card Detail Produk */}
                 <div className="p-6 rounded-2xl shadow-lg bg-white relative">
                     <button
                         onClick={() => setIsModalOpen(true)}
@@ -110,7 +108,6 @@ export default function StokDetailPage() {
                         </div>
                     </div>
 
-                    {/* Data stok sebagai kotak kecil sejajar */}
                     <div className="mt-6 grid grid-cols-3 gap-4">
                         <div className="bg-gray-50 rounded-lg p-4 text-center shadow-sm">
                             <p className="font-semibold">Stok Awal</p>
@@ -127,7 +124,6 @@ export default function StokDetailPage() {
                     </div>
                 </div>
 
-                {/* Card Restock */}
                 <div className="p-6 rounded-2xl shadow-lg bg-white relative">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-semibold">
@@ -162,7 +158,6 @@ export default function StokDetailPage() {
                 </div>
             </div>
 
-            {/* Modal Edit Produk */}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.25)] z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -209,7 +204,6 @@ export default function StokDetailPage() {
                 </div>
             )}
 
-            {/* Modal Restock */}
             {isRestockModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.25)] z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -272,6 +266,6 @@ export default function StokDetailPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }
