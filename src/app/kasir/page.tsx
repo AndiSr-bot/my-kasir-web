@@ -1,13 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import {
+    createCustomer,
+    getAllCustomer,
+} from "@/repositories/customer_repository";
+import { createHutang } from "@/repositories/hutang_repository";
 import { getAllPerusahaan } from "@/repositories/perusahaan_repository";
-import { searchStok } from "@/repositories/stok_repository"; // ganti sesuai implementasi kamu
+import { searchStok } from "@/repositories/stok_repository";
 import { createTransaksi } from "@/repositories/transaksi_repository";
+import { ECustomerStatus, TCustomer, TCustomerCreate } from "@/types/customer";
+import { EStatusHutang } from "@/types/hutang";
 import { TKeranjang } from "@/types/keranjang";
 import { TPerusahaan } from "@/types/perusahaan";
 import { TStok } from "@/types/stok";
 import { namaBulan, namaHari } from "@/utils/constant";
+import { serverTimestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function KasirPage() {
     const [perusahaanList, setPerusahaanList] = useState<TPerusahaan[]>([]);
@@ -22,6 +32,18 @@ export default function KasirPage() {
     const [tahun, setTahun] = useState<number>(0);
     const [jumlahBayar, setJumlahBayar] = useState<string>("");
 
+    // modal
+    const [showModal, setShowModal] = useState(false);
+
+    // customer
+    const [customerList, setCustomerList] = useState<TCustomer[]>([]);
+    const [selectedCustomer, setSelectedCustomer] = useState<string>("");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<TCustomerCreate>();
     const getDateNow = () => {
         const now = new Date();
         setHari(namaHari[now.getDay()]);
@@ -37,11 +59,20 @@ export default function KasirPage() {
         const random = Math.floor(1000 + Math.random() * 9000);
         setKode(`TR-${tahun}${bulan}${tanggal}${random}`);
     };
+
     // ambil daftar perusahaan
     const fetchPerusahaan = async () => {
         const list = await getAllPerusahaan();
         setPerusahaanList(list);
         if (list.length > 0) setSelectedPerusahaan(list[0].id!);
+    };
+
+    // ambil daftar customer
+    const fetchCustomer = async () => {
+        if (!selectedPerusahaan) return;
+        const list = await getAllCustomer(selectedPerusahaan);
+        setCustomerList(list);
+        if (list.length > 0) setSelectedCustomer(list[0].id!);
     };
 
     useEffect(() => {
@@ -50,6 +81,10 @@ export default function KasirPage() {
         getDateNow();
     }, []);
 
+    useEffect(() => {
+        fetchCustomer();
+    }, [selectedPerusahaan]);
+
     // search produk berdasarkan keyword
     const handleSearchProduk = async () => {
         if (!keyword || !selectedPerusahaan) return;
@@ -57,7 +92,7 @@ export default function KasirPage() {
         setSearchResults(results);
     };
 
-    // tambah produk dari hasil search ke keranjang
+    // tambah produk
     const handleAddProduk = (stok: TStok) => {
         setCart((prev) => {
             const exist = prev.find((item) => item.stokId === stok.id);
@@ -83,19 +118,17 @@ export default function KasirPage() {
         setSearchResults([]);
     };
 
-    // hapus item dari keranjang
     const handleRemove = (stokId: string) => {
         setCart(cart.filter((item) => item.stokId !== stokId));
     };
 
-    // reset keranjang
     const handleReset = () => {
         generateKodeTransaksi();
         setCart([]);
         setJumlahBayar("");
+        setSelectedCustomer("");
     };
 
-    // update jumlah beli
     const handleUpdateJumlah = (stokId: string, jumlah: number) => {
         setCart((prev) =>
             prev.map((item) =>
@@ -104,7 +137,8 @@ export default function KasirPage() {
         );
     };
 
-    const handleBayar = async () => {
+    // buka modal
+    const handleBayar = () => {
         if (
             cart.length === 0 ||
             !selectedPerusahaan ||
@@ -116,16 +150,69 @@ export default function KasirPage() {
             !tahun
         ) {
             alert("Keranjang kosong atau jumlah bayar belum diisi.");
+            return;
         }
-        await createTransaksi(
-            selectedPerusahaan,
-            cart,
-            kode,
-            hari,
-            tanggal,
-            bulan,
-            tahun
-        );
+        setShowModal(true);
+    };
+
+    // proses pembayaran (simpan transaksi & hutang jika ada)
+    const handleProsesPembayaran = async () => {
+        try {
+            if (!selectedPerusahaan) return;
+            if (hutang > 0 && !selectedCustomer) {
+                alert("Pilih customer untuk mencatat hutang!");
+                return;
+            }
+            await createTransaksi(
+                selectedPerusahaan,
+                cart,
+                kode,
+                hari,
+                tanggal,
+                bulan,
+                tahun
+            );
+
+            if (hutang > 0) {
+                if (!selectedCustomer) {
+                    alert("Pilih customer untuk mencatat hutang!");
+                    return;
+                }
+                await createHutang(selectedPerusahaan, selectedCustomer, {
+                    tanggal,
+                    bulan,
+                    tahun,
+                    tanggal_lengkap: `${tanggal}/${String(
+                        new Date().getMonth() + 1
+                    ).padStart(2, "0")}/${tahun}`,
+                    nominal: hutang,
+                    status: EStatusHutang.BELUM_LUNAS,
+                    transaksiId: kode,
+                    created_at: serverTimestamp(),
+                    updated_at: serverTimestamp(),
+                });
+            }
+
+            alert("Transaksi berhasil disimpan.");
+            setShowModal(false);
+        } catch (err) {
+            console.error(err);
+            alert("Gagal menyimpan transaksi");
+        }
+    };
+    const onSubmitCustomer = async (formData: TCustomerCreate) => {
+        try {
+            if (!selectedPerusahaan) return;
+            await createCustomer(selectedPerusahaan, {
+                ...formData,
+                status: ECustomerStatus.ACTIVE,
+            });
+            reset();
+            fetchCustomer();
+        } catch (err) {
+            console.error(err);
+            alert("Gagal menyimpan customer");
+        }
     };
     const total = cart.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
     const totalBayar = parseInt(jumlahBayar || "0") || 0;
@@ -217,22 +304,22 @@ export default function KasirPage() {
                 <table className="min-w-full border border-gray-100">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold w-0">
                                 No
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold">
                                 Barcode
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold">
                                 Nama Barang
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold">
                                 Jumlah
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold">
                                 Harga
                             </th>
-                            <th className="px-4 py-2 text-left font-semibold">
+                            <th className="px-4 py-2 text-center border-r border-gray-200 font-semibold">
                                 Total
                             </th>
                             <th className="px-4 py-2 text-left font-semibold w-0"></th>
@@ -254,13 +341,17 @@ export default function KasirPage() {
                                     className={`${
                                         i % 2 === 0 ? "bg-white" : "bg-gray-50"
                                     } hover:bg-blue-50`}>
-                                    <td className="px-4 py-2">{i + 1}</td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 border-r border-gray-200 text-center">
+                                        {i + 1}
+                                    </td>
+                                    <td className="px-4 py-2 border-r border-gray-200">
                                         {item.stok?.no_barcode}
                                     </td>
-                                    <td className="px-4 py-2">{item.nama}</td>
-                                    <td className="px-4 py-2">
-                                        <div className="flex items-center gap-1">
+                                    <td className="px-4 py-2 border-r border-gray-200">
+                                        {item.nama}
+                                    </td>
+                                    <td className="px-4 py-2 border-r border-gray-200 text-center">
+                                        <div className="flex items-center justify-center gap-1">
                                             <button
                                                 onClick={() =>
                                                     handleUpdateJumlah(
@@ -277,7 +368,12 @@ export default function KasirPage() {
                                             <input
                                                 type="text"
                                                 value={item.jumlah}
-                                                // readOnly
+                                                onChange={(e) =>
+                                                    handleUpdateJumlah(
+                                                        item.stokId,
+                                                        parseInt(e.target.value)
+                                                    )
+                                                }
                                                 className="w-12 text-center border rounded-md"
                                             />
                                             <button
@@ -293,16 +389,16 @@ export default function KasirPage() {
                                         </div>
                                     </td>
 
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 border-r border-gray-200 text-right">
                                         Rp {item.harga.toLocaleString("id-ID")}
                                     </td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 border-r border-gray-200 text-right">
                                         Rp{" "}
                                         {(
                                             item.harga * item.jumlah
                                         ).toLocaleString("id-ID")}
                                     </td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 ">
                                         <button
                                             onClick={() =>
                                                 handleRemove(item.stokId)
@@ -318,10 +414,9 @@ export default function KasirPage() {
                 </table>
 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-6">
-                    {/* Baris pertama */}
                     <div>
                         <label className="block font-bold">Total Semua</label>
-                        <div className="w-full rounded-md p-2 bg-gray-100">
+                        <div className="w-full rounded-md py-2 px-4 bg-gray-100 text-right">
                             Rp {total.toLocaleString("id-ID")}
                         </div>
                     </div>
@@ -337,41 +432,197 @@ export default function KasirPage() {
                                     if (cart.length === 0) return;
                                     setJumlahBayar(e.target.value);
                                 }}
-                                className="flex-1 border rounded-md p-2"
+                                className="flex-1 border rounded-md py-2 px-0 text-right"
                             />
                         </div>
                     </div>
 
-                    {/* Baris kedua */}
                     <div>
                         <label className="block font-bold">Kembali</label>
-                        <div className="w-full  rounded-md p-2 bg-gray-100">
+                        <div className="w-full  rounded-md py-2 px-4 bg-green-100 text-right">
                             Rp {Math.max(kembalian, 0).toLocaleString("id-ID")}
                         </div>
                     </div>
 
                     <div>
                         <label className="block font-bold">Terhutang</label>
-                        <div className="w-full  rounded-md p-2 bg-gray-100">
+                        <div className="w-full  rounded-md py-2 px-4 bg-red-100 text-right">
                             Rp {Math.max(hutang, 0).toLocaleString("id-ID")}
                         </div>
                     </div>
                 </div>
 
-                {/* Tombol print di bawah kanan */}
                 <div className="mt-5 flex justify-center gap-2">
                     <button
                         onClick={handleBayar}
                         className="bg-green-500 text-white px-4 rounded-md">
                         Bayar
                     </button>
-                    <button
-                        // onClick={handlePrint}
-                        className="bg-gray-600 text-white px-4 py-2 rounded-md">
+                    <button className="bg-gray-600 text-white px-4 py-2 rounded-md">
                         Print Bukti Pembayaran
                     </button>
                 </div>
             </div>
+
+            {showModal && (
+                <div className="fixed inset-0 bg-[rgba(0,0,0,0.25)] bg-opacity-40 flex justify-center items-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-xl font-bold mb-4">
+                            Konfirmasi Pembayaran
+                        </h2>
+
+                        <table className="min-w-full border-gray-100 text-lg">
+                            <tbody>
+                                <tr>
+                                    <td className="py-1">Total</td>
+                                    <td className="py-1">: Rp </td>
+                                    <td className="py-1 text-right">
+                                        {total.toLocaleString("id-ID")}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1">Bayar</td>
+                                    <td className="py-1">: Rp </td>
+                                    <td className="py-1 text-right">
+                                        {parseInt(jumlahBayar).toLocaleString(
+                                            "id-ID"
+                                        )}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1">Kembali</td>
+                                    <td className="py-1">: Rp </td>
+                                    <td
+                                        className={`py-1 text-right ${
+                                            kembalian > 0
+                                                ? "text-green-500"
+                                                : ""
+                                        }`}>
+                                        {Math.max(kembalian, 0).toLocaleString(
+                                            "id-ID"
+                                        )}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1">Hutang</td>
+                                    <td className="py-1">: Rp </td>
+                                    <td
+                                        className={`py-1 text-right ${
+                                            hutang > 0 ? "text-red-500" : ""
+                                        }`}>
+                                        {Math.max(hutang, 0).toLocaleString(
+                                            "id-ID"
+                                        )}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        {hutang > 0 && (
+                            <div className="mt-4">
+                                <label className="block font-semibold mb-1">
+                                    Pilih Customer
+                                </label>
+                                <select
+                                    value={selectedCustomer}
+                                    onChange={(e) =>
+                                        setSelectedCustomer(e.target.value)
+                                    }
+                                    className="w-full border p-2 rounded-md">
+                                    <option value="">
+                                        -- Pilih Customer --
+                                    </option>
+                                    {customerList.map((c) => (
+                                        <option key={c.id} value={c.id}>
+                                            {c.nama} ({c.no_hp})
+                                        </option>
+                                    ))}
+                                    <option
+                                        value="add"
+                                        className="bg-blue-400 text-white">
+                                        Tambah Customer
+                                    </option>
+                                </select>
+                            </div>
+                        )}
+
+                        {selectedCustomer === "add" && (
+                            <form
+                                onSubmit={handleSubmit(onSubmitCustomer)}
+                                className="space-y-4">
+                                <div className="border p-3 mt-4 rounded-md">
+                                    <div className="font-bold">
+                                        Tambah Customer
+                                    </div>
+                                    <div className="mt-2">
+                                        <input
+                                            type="text"
+                                            {...register("nama", {
+                                                required: true,
+                                            })}
+                                            className="w-full border p-2 rounded-md"
+                                            placeholder="Nama"
+                                        />
+                                        {errors.nama && (
+                                            <p className="text-red-500 text-sm">
+                                                Nama wajib diisi
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="mt-2">
+                                        <input
+                                            type="text"
+                                            {...register("no_hp", {
+                                                required: true,
+                                            })}
+                                            className="w-full border p-2 rounded-md"
+                                            placeholder="No Hp"
+                                        />
+                                        {errors.no_hp && (
+                                            <p className="text-red-500 text-sm">
+                                                No Hp wajib diisi
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="mt-2">
+                                        <input
+                                            type="text"
+                                            {...register("alamat", {
+                                                required: true,
+                                            })}
+                                            className="w-full border p-2 rounded-md"
+                                            placeholder="Alamat"
+                                        />
+                                        {errors.alamat && (
+                                            <p className="text-red-500 text-sm">
+                                                Alamat wajib diisi
+                                            </p>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600 cursor-pointer w-full">
+                                        Simpan
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="bg-gray-400 text-white px-4 py-2 rounded-md">
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleProsesPembayaran}
+                                className="bg-green-500 text-white px-4 py-2 rounded-md">
+                                Proses Pembayaran
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
