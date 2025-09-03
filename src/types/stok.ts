@@ -9,9 +9,9 @@ export interface TStok {
     no_barcode: string;
     gambar?: string | null;
     restocks?: TRestock[];
-    created_at?: any;
-    updated_at?: any;
-    restocked_at?: any;
+    created_at?: string;
+    updated_at?: string;
+    restocked_at?: string;
 }
 export interface TStokCreate {
     perusahaanId: string;
@@ -22,9 +22,9 @@ export interface TStokCreate {
     stok_sisa: number;
     no_barcode: string;
     gambar?: string | null;
-    created_at: any;
-    updated_at: any;
-    restocked_at: any;
+    created_at: string;
+    updated_at: string;
+    restocked_at: string;
     restocks: TRestock[];
 }
 export interface TStokUpdate {
@@ -34,8 +34,8 @@ export interface TStokUpdate {
     stok_sisa?: number;
     stok_terjual?: number;
     gambar?: string | null;
-    updated_at?: any;
-    restocked_at?: any;
+    updated_at?: string;
+    restocked_at?: string;
     restocks?: TRestock[];
 }
 export interface TRestock {
