@@ -11,8 +11,8 @@ export interface TTransaksi {
     bulan: string;
     tahun: string;
     kode: string;
-    created_at?: string;
-    updated_at?: string;
+    created_at?: any;
+    updated_at?: any;
 }
 export interface TPembukuan {
     id: string;
@@ -35,8 +35,8 @@ export interface TTransaksiCreate {
     bulan: string;
     tahun: string;
     kode: string;
-    created_at: string;
-    updated_at: string;
+    created_at: any;
+    updated_at: any;
 }
 
 export interface TTransaksiGrouped {

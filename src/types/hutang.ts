@@ -11,6 +11,6 @@ export interface THutang {
     nominal: number;
     status: EStatusHutang;
     transaksiId: string;
-    created_at: string;
-    updated_at: string;
+    created_at: any;
+    updated_at: any;
 }

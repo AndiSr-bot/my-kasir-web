@@ -14,3 +14,10 @@ export interface TCustomer {
     status: ECustomerStatus;
     hutangs?: THutang[];
 }
+export interface TCustomerCreate {
+    nama: string;
+    no_hp: string;
+    alamat: string;
+    join_date: string;
+    status: ECustomerStatus;
+}
