@@ -1,3 +1,5 @@
+import { THutang } from "./hutang";
+
 export enum ECustomerStatus {
     ACTIVE = "active",
     INACTIVE = "inactive",
@@ -10,4 +12,5 @@ export interface TCustomer {
     alamat: string;
     join_date: string;
     status: ECustomerStatus;
+    hutangs?: THutang[];
 }
