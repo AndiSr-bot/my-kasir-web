@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export enum EStatusHutang {
     BELUM_LUNAS = "belum_lunas",
     LUNAS = "lunas",
